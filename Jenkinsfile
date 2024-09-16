@@ -8,7 +8,7 @@ pipeline{
          }
        stage('deploy stage') {
             agent {
-                label 'deploy'
+                label 'tomcat'
             }
             steps{
                 script {
