@@ -10,7 +10,8 @@
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>jenkins-test</artifactId>
-	<version>2.14</version>
+	<version>3.0</version>
+	<version>3.1</version>
 	<name>jenkins-test</name>
 	<description>Demo for jenkins</description>
 	<properties>
