@@ -19,12 +19,12 @@ pipeline {
             }
         }
 
-     /*   stage('Unit Test (JUnit)') {
+       stage('Unit Test (JUnit)') {
             steps {
                 sh 'mvn test'
                 junit '**/target/surefire-reports/*.xml' // Publish JUnit results
             }
-        }  */
+        }  
 
         stage('SonarQube Analysis') {
             steps {
