@@ -1,0 +1,70 @@
+pipeline {
+    agent any
+
+    environment {
+        SONARQUBE_SERVER = 'MySonarQubeServer' // name configured in Jenkins -> Manage Jenkins -> Configure System
+    }
+
+    stages {
+
+        stage('Checkout from Git') {
+            steps {
+                git 'https://github.com/suhasinish05/example-java.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+
+     /*   stage('Unit Test (JUnit)') {
+            steps {
+                sh 'mvn test'
+                junit '**/target/surefire-reports/*.xml' // Publish JUnit results
+            }
+        }  */
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE_SERVER}") {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                        sh 'mvn sonar:sonar'
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate Check') {
+            steps {
+                timeout(time: 1, unit: 'MINUTES') {
+                    script {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            echo "Quality Gate failed: ${qg.status}"
+                            currentBuild.result = 'UNSTABLE'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy (Dev Environment)') {
+            steps {
+                echo 'Deploying to development server...'
+                // Add your deployment script or commands here
+                sh 'echo "Deployment Done"'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished!'
+        }
+        failure {
+            echo 'Build failed! Check logs.'
+        }
+    }
+}
